@@ -1,6 +1,6 @@
 # Damn Vulnerable DeFi - Solutions
 
-This repository contains my solutions and detailed writeups for the [Damn Vulnerable DeFi](https://www.damnvulnerabledefi.xyz/) challenges.
+This repository contains the solutions and detailed writeups for the [Damn Vulnerable DeFi](https://www.damnvulnerabledefi.xyz/) challenges.
 
 Damn Vulnerable DeFi is an educational project designed to learn about DeFi security by breaking various DeFi protocols in a CTF-style environment. These challenges simulate real-world vulnerabilities that have been discovered in DeFi protocols.
 
