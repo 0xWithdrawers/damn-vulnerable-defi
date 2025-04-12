@@ -9,7 +9,7 @@ Damn Vulnerable DeFi is an educational project designed to learn about DeFi secu
 | Challenge Name | Challenge Description | Test File | Solution Writeup |
 |----------------|----------------------|-----------|-----------------|
 | Unstoppable | Stop the lending pool from offering flash loans | [Unstoppable.t.sol](test/unstoppable/Unstoppable.t.sol) | [Unstoppable Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/unstopable/) |
-
+| Naive Receiver | Rescue all WETH from the user and the pool | [NaiveReceiver.t.sol](test/naive-receiver/NaiveReceiver.t.sol) | [Naive Receiver Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/naive_receiver/) |
 
 ## Acknowledgments
 

