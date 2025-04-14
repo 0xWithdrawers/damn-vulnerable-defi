@@ -70,7 +70,7 @@ contract SideEntranceChallenge is Test {
     }
 }
 
-// Notre contrat d'exploitation qui va utiliser la vulnérabilité de side entrance
+// Our exploitation contract, which will use the vulnerability of side entrance
 contract SideEntranceExploiter {
     SideEntranceLenderPool private immutable pool;
 
