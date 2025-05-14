@@ -6,12 +6,13 @@ Damn Vulnerable DeFi is an educational project designed to learn about DeFi secu
 
 ## Solutions Table
 
-| Challenge Name | Challenge Description | Test File | Solution Writeup |
+| Challenge Name | Test File | Solution Writeup |
 |----------------|----------------------|-----------|-----------------|
-| Unstoppable | Stop the lending pool from offering flash loans | [Unstoppable.t.sol](test/unstoppable/Unstoppable.t.sol) | [Unstoppable Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/unstopable/) |
-| Naive Receiver | Rescue all WETH from the user and the pool | [NaiveReceiver.t.sol](test/naive-receiver/NaiveReceiver.t.sol) | [Naive Receiver Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/naive_receiver/) |
-| Truster | Rescue all funds in the pool executing a single transaction | [Truster.t.sol](test/truster/Truster.t.sol) | [Truster Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/truster/) |
-| Side Entrance | Withdraw all the funds | [SideEntrance.t.sol](test/side-entrance/SideEntrance.t.sol) | [Side Entrance Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/side_entrance/) |
+| Unstoppable | [Unstoppable.t.sol](test/unstoppable/Unstoppable.t.sol) | [Unstoppable Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/unstopable/) |
+| Naive Receiver | [NaiveReceiver.t.sol](test/naive-receiver/NaiveReceiver.t.sol) | [Naive Receiver Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/naive_receiver/) |
+| Truster | [Truster.t.sol](test/truster/Truster.t.sol) | [Truster Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/truster/) |
+| Side Entrance | [SideEntrance.t.sol](test/side-entrance/SideEntrance.t.sol) | [Side Entrance Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/side_entrance/) |
+| The Rewarder | [TheRewarder.t.sol](test/the-rewarder/TheRewarder.t.sol) | [The Rewarder Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/the_rewarder/) |
 
 ## Acknowledgments
 

