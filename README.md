@@ -7,7 +7,7 @@ Damn Vulnerable DeFi is an educational project designed to learn about DeFi secu
 ## Solutions Table
 
 | Challenge Name | Test File | Solution Writeup |
-|----------------|----------------------|-----------|-----------------|
+|----------------|-----------|-----------------|
 | Unstoppable | [Unstoppable.t.sol](test/unstoppable/Unstoppable.t.sol) | [Unstoppable Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/unstopable/) |
 | Naive Receiver | [NaiveReceiver.t.sol](test/naive-receiver/NaiveReceiver.t.sol) | [Naive Receiver Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/naive_receiver/) |
 | Truster | [Truster.t.sol](test/truster/Truster.t.sol) | [Truster Writeup](https://blog.jomar.fr/posts/2025/damn_vulnerable_defi/truster/) |
